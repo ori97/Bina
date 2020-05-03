@@ -36,11 +36,9 @@ class MDAMaxAirDistHeuristic(HeuristicFunction):
             Use python's built-in `max()` function. Note that `max()` can receive an *ITERATOR*
                 and return the item with the maximum value within this iterator.
             That is, you can simply write something like this:
-        >>> max(<some expression using item1 & item2>
-        >>>     for item1 in some_items_collection
-        >>>     for item2 in some_items_collection
-        >>>     if <some condition over item1 & item2>)
-        """
+            """
+
+
         assert isinstance(self.problem, MDAProblem)
         assert isinstance(state, MDAState)
 
@@ -49,7 +47,16 @@ class MDAMaxAirDistHeuristic(HeuristicFunction):
         if len(all_certain_junctions_in_remaining_ambulance_path) < 2:
             return 0
 
-        return 10  # TODO: modify this line.
+        a=max(self.cached_air_distance_calculator.get_air_distance_between_junctions(item1,item2) \
+            for item1 in all_certain_junctions_in_remaining_ambulance_path \
+            for item2 in all_certain_junctions_in_remaining_ambulance_path \
+            if item1 != item2)
+        """
+        a = max(
+            item_1.calc_air_distance_from(item_2) for item_1 in all_certain_junctions_in_remaining_ambulance_path
+            for item_2 in all_certain_junctions_in_remaining_ambulance_path)
+        """
+        return a
 
 
 class MDASumAirDistHeuristic(HeuristicFunction):
