@@ -99,6 +99,7 @@ class MDAState(GraphProblemState):
          Notice that `sum()` can receive an *ITERATOR* as argument; That is, you can simply write something like this:
         >>> sum(<some expression using item> for item in some_collection_of_items)
         """
+        return sum(lambda x : x for x in self.tests_on_ambulance)
         raise NotImplementedError  # TODO: remove this line.
 
 
@@ -203,7 +204,10 @@ class MDAProblem(GraphProblem):
             - Other fields of the state and the problem input.
             - Python's sets union operation (`some_set_or_frozenset | some_other_set_or_frozenset`).
         """
-
+        for lab in self.problem_input.laboratories:
+            if state_to_expand.get_total_nr_tests_taken_and_stored_on_ambulance() \
+                or not lab in state_to_expand.visited_labs:
+                successor_state=(lab,)
         assert isinstance(state_to_expand, MDAState)
         raise NotImplementedError  # TODO: remove this line!
 
