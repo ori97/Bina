@@ -293,4 +293,7 @@ class MDAProblem(GraphProblem):
             Use the method `self.get_reported_apartments_waiting_to_visit(state)`.
             Use python's `sorted(..., key=...)` function.
         """
-        raise NotImplementedError  # TODO: remove this line!
+        ret =[state.current_location]
+        for apartment in self.get_reported_apartments_waiting_to_visit(state):
+            ret.append(apartment.location)
+        return sorted(ret,key= lambda x: x.index)
