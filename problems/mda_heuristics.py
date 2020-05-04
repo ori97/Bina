@@ -94,7 +94,6 @@ class MDASumAirDistHeuristic(HeuristicFunction):
         if len(all_certain_junctions_in_remaining_ambulance_path) < 2:
             return 0
 
-
         raise NotImplementedError  # TODO: remove this line and complete the missing part here!
 
 
