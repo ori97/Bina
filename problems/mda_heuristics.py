@@ -94,7 +94,24 @@ class MDASumAirDistHeuristic(HeuristicFunction):
         if len(all_certain_junctions_in_remaining_ambulance_path) < 2:
             return 0
 
-        raise NotImplementedError  # TODO: remove this line and complete the missing part here!
+        ret = 0.0
+        curr = state.current_location
+        size = len(all_certain_junctions_in_remaining_ambulance_path)
+        while size > 0:
+            min_path = float("inf")
+            min_junc = curr
+            for junction in all_certain_junctions_in_remaining_ambulance_path:
+                if junction!=curr:
+                    Len = self.cached_air_distance_calculator.get_air_distance_between_junctions(curr, junction)
+                    if(Len < min_path):
+                        min_path = Len
+                        min_junc= junction
+            ret+=min_path
+            if curr != min_junc:
+                curr=min_junc
+                all_certain_junctions_in_remaining_ambulance_path.remove(curr)
+            size-=1
+        return ret
 
 
 class MDAMSTAirDistHeuristic(HeuristicFunction):
