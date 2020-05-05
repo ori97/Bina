@@ -217,15 +217,16 @@ class MDAProblem(GraphProblem):
                     yield OperatorResult(successor_state= state,operator_cost=cost,
                                          operator_name="visit {0}".format(apartment.reporter_name))
         for lab in self.problem_input.laboratories:
+            lab_in_visited_labs = lab in state_to_expand.visited_labs
             if state_to_expand.get_total_nr_tests_taken_and_stored_on_ambulance() \
-                    or not lab in state_to_expand.visited_labs:
-                matoshim = (lab not in state_to_expand.visited_labs)*lab.max_nr_matoshim
+                    or not lab_in_visited_labs:
+                matoshim = (not lab_in_visited_labs)*lab.max_nr_matoshim
                 successor_state = MDAState(current_site=lab,
                                            tests_on_ambulance=frozenset({}),
                                            tests_transferred_to_lab=state_to_expand.tests_transferred_to_lab
                                            | state_to_expand.tests_on_ambulance,
                                            nr_matoshim_on_ambulance= state_to_expand.nr_matoshim_on_ambulance+matoshim,
-                                           visited_labs=frozenset(state_to_expand.visited_labs | frozenset({lab})))
+                                           visited_labs=state_to_expand.visited_labs | frozenset({lab}))
                 yield OperatorResult(successor_state=successor_state,
                                      operator_cost=self.get_operator_cost(state_to_expand,successor_state),
                                      operator_name="go to lab {}".format(lab.name))
@@ -246,7 +247,7 @@ class MDAProblem(GraphProblem):
             distance_cost=float("inf")
 
         tests_travel_distance_cost=prev_state.get_total_nr_tests_taken_and_stored_on_ambulance()*distance_cost
-        return MDACost(distance_cost,tests_travel_distance_cost)
+        return MDACost(distance_cost,tests_travel_distance_cost,self.optimization_objective)
 
 
     def is_goal(self, state: GraphProblemState) -> bool:

@@ -149,16 +149,14 @@ class MDAMSTAirDistHeuristic(HeuristicFunction):
               `.size(weight='weight')`. Do not manually sum the edges' weights.
         """
         G = nx.Graph()
-        G.add_nodes_from(list(map(lambda x: x.index,junctions)))
-        for junc1 in junctions:
-            for junc2 in junctions:
-                if not G.has_edge(junc1.index,junc2.index):
-                    G.add_weighted_edges_from([(junc1.index,junc2.index,
-                               self.cached_air_distance_calculator.get_air_distance_between_junctions(junc1,junc2))])
+        list_edges=[(junc1,junc2,self.cached_air_distance_calculator.get_air_distance_between_junctions(junc1,junc2))
+                    for junc1 in junctions
+                    for junc2 in junctions
+                    if junc1!=junc2]
+        G.add_weighted_edges_from(list_edges)
         return nx.minimum_spanning_tree(G).size(weight='weight')
 
 
-        raise NotImplementedError  # TODO: remove this line!
 
 
 class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
@@ -192,6 +190,17 @@ class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
             """
             Returns the distance between `junction` and the laboratory that is closest to `junction`.
             """
-            return min(...)  # TODO: replace `...` with the relevant implementation.
+            return min(self.cached_air_distance_calculator.get_air_distance_between_junctions(junction,lab.location)
+                       for lab in self.problem.problem_input.laboratories  )
+        ret = 0.0
 
-        raise NotImplementedError
+        if len(state.tests_on_ambulance) > 0:
+            ret += air_dist_to_closest_lab(state.current_location)*state.get_total_nr_tests_taken_and_stored_on_ambulance()
+
+        ret+=sum(air_dist_to_closest_lab(apartment.location)* apartment.nr_roommates
+                 for apartment in self.problem.get_reported_apartments_waiting_to_visit(state))
+        """
+        for apartment in self.problem.get_reported_apartments_waiting_to_visit(state):
+            ret+=(air_dist_to_closest_lab(apartment.location)*apartment.nr_roommates)
+        """
+        return ret
