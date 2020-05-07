@@ -243,10 +243,9 @@ def multiple_objectives_mda_problem_experiments():
     # Ex.31
     # TODO: create an instance of `AStar` with the `MDATestsTravelDistToNearestLabHeuristic`,
     #       solve the `moderate_mda_problem_with_tests_travel_dist_cost` with it and print the results.
-    while True:
-        As = AStar(MDATestsTravelDistToNearestLabHeuristic)
-        res = As.solve_problem(moderate_mda_problem_with_tests_travel_dist_cost)
-        print(res)
+    # As = AStar(MDATestsTravelDistToNearestLabHeuristic)
+    # res = As.solve_problem(moderate_mda_problem_with_tests_travel_dist_cost)
+    # print(res)
 
     # Ex.34
     # TODO: Implement the algorithm A_2 described in this exercise in the assignment instructions.
@@ -260,6 +259,17 @@ def multiple_objectives_mda_problem_experiments():
     #          has to return whether to add this just-created-node to the `open` queue. Remember that in python
     #          you can pass an argument to a function by its name `some_func(argument_name=some_value)`.
     #       Solve the `moderate_mda_problem_with_tests_travel_dist_cost` with it and print the results.
+    As = AStar(MDAMSTAirDistHeuristic)
+    res= As.solve_problem(moderate_mda_problem_with_distance_cost)
+    optimal_distance_cost = res.solution_g_cost
+
+    eps = 0.6
+    max_distance_cost = (1+eps)*optimal_distance_cost
+    As2 = AStar(MDATestsTravelDistToNearestLabHeuristic,
+                open_criterion=lambda Node: Node.g_cost <= max_distance_cost)
+    res = As2.solve_problem(moderate_mda_problem_with_tests_travel_dist_cost)
+    print(res)
+
     exit()  # TODO: remove!
 
 

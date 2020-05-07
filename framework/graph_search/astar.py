@@ -74,7 +74,7 @@ class AStar(BestFirstSearch):
 
         if self.open.has_state(successor_node.state):
             curr = self.open.get_node_by_state(successor_node.state)
-            if self._calc_node_expanding_priority(curr)>self._calc_node_expanding_priority(successor_node):
+            if curr.g_cost > successor_node.g_cost:
                 self.open.extract_node(curr)
             else:
                 return
@@ -82,7 +82,7 @@ class AStar(BestFirstSearch):
             if self.close is not None:
                 if self.close.has_state(successor_node.state):
                     curr = self.close.get_node_by_state(successor_node.state)
-                    if self._calc_node_expanding_priority(curr) >  self._calc_node_expanding_priority(successor_node):
+                    if curr.g_cost > successor_node.g_cost:
                         self.close.remove_node(curr)
                     else:
                         return
