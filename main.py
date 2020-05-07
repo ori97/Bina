@@ -262,11 +262,11 @@ def multiple_objectives_mda_problem_experiments():
     As = AStar(MDAMSTAirDistHeuristic)
     res= As.solve_problem(moderate_mda_problem_with_distance_cost)
     optimal_distance_cost = res.solution_g_cost
-
+    print(res)
     eps = 0.6
     max_distance_cost = (1+eps)*optimal_distance_cost
     As2 = AStar(MDATestsTravelDistToNearestLabHeuristic,
-                open_criterion=lambda Node: Node.g_cost <= max_distance_cost)
+                open_criterion=lambda Node: Node.cost.distance_cost <= max_distance_cost)
     res = As2.solve_problem(moderate_mda_problem_with_tests_travel_dist_cost)
     print(res)
 
