@@ -149,11 +149,11 @@ class MDAMSTAirDistHeuristic(HeuristicFunction):
               `.size(weight='weight')`. Do not manually sum the edges' weights.
         """
         G = nx.Graph()
-        list_edges=[(junc1,junc2,self.cached_air_distance_calculator.get_air_distance_between_junctions(junc1,junc2))
-                    for junc1 in junctions
-                    for junc2 in junctions
-                    if junc1!=junc2]
-        G.add_weighted_edges_from(list_edges)
+        for j1 in junctions:
+            for j2 in junctions:
+                if j1!=j2 and not G.has_edge(j1,j1):
+                    G.add_weighted_edges_from([(j1,j2,self.cached_air_distance_calculator
+                                                .get_air_distance_between_junctions(j1,j2))])
         return nx.minimum_spanning_tree(G).size(weight='weight')
 
 
@@ -194,7 +194,7 @@ class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
                        for lab in self.problem.problem_input.laboratories  )
         ret = 0.0
 
-        if len(state.tests_on_ambulance) > 0:
+        if state.tests_on_ambulance:
             ret += air_dist_to_closest_lab(state.current_location)*state.get_total_nr_tests_taken_and_stored_on_ambulance()
 
         ret+=sum(air_dist_to_closest_lab(apartment.location)* apartment.nr_roommates

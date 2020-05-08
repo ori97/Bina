@@ -68,5 +68,27 @@ class AStarEpsilon(AStar):
          method should be kept in the open queue at the end of this method, except
          for the extracted (and returned) node.
         """
+        if len(self.open) <= 0:
+            return None
+        next_node = self.open.peek_next_node()
+        min_val=next_node.expanding_priority
+        focal = []
+        while len(self.open) > 0 and (self.max_focal_size is None
+                                         or len(focal) < self.max_focal_size):
+            if self.open.peek_next_node().expanding_priority <= (1+self.focal_epsilon) * min_val:
+                focal.append(self.open.pop_next_node())
+            else:
+                break
+        best_nodes=[self.within_focal_priority_function(node,problem,self)
+                    for node in focal]
+        index = np.argmin(best_nodes)
+        node_to_return = focal[index]
+        del focal[index]
+        for node in focal:
+            self.open.push_node(node)
+        self.close.add_node(node_to_return)
+        return node_to_return
+
+
 
         raise NotImplementedError  # TODO: remove!
